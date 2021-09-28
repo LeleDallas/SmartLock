@@ -74,10 +74,9 @@ public class LockFragment extends Fragment {
     }
     RecyclerView recyclerView;
     AppListAdapter adapter;
-    /*int flags = PackageManager.GET_META_DATA |
+    int flags = PackageManager.GET_META_DATA |
             PackageManager.GET_SHARED_LIBRARY_FILES |
-            PackageManager.GET_UNINSTALLED_PACKAGES;*/
-
+            PackageManager.GET_UNINSTALLED_PACKAGES;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -89,7 +88,8 @@ public class LockFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         for (ApplicationInfo packageInfo : packages) {
-            //if ((packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1){
+            //get installed
+            if ((packageInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0){
                 // Log.d(TAG, "Installed package :" + packageInfo.packageName);
                 //Log.d(TAG, "Source dir : " + packageInfo.sourceDir);
                 //Log.d(TAG, "Launch Activity :" + pm.getLaunchIntentForPackage(packageInfo.packageName));
@@ -100,7 +100,7 @@ public class LockFragment extends Fragment {
                 }catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
-           // }
+            }
         }
         adapter = new AppListAdapter(getContext(), apps, imgs);
         recyclerView.setAdapter(adapter);
