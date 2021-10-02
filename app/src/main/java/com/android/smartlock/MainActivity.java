@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -27,12 +29,15 @@ import nl.joery.animatedbottombar.AnimatedBottomBar;
 public class MainActivity extends AppCompatActivity {
 
     private Fragment fragment=null;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AnimatedBottomBar animatedBottomBar= findViewById(R.id.bottom_bar);
-
         getSupportFragmentManager().beginTransaction().replace(R.id.container,  new DashboardFragment()).commit();
         animatedBottomBar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
             @SuppressLint("ResourceType")
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(int i, @Nullable AnimatedBottomBar.Tab tab, int i1, @NotNull AnimatedBottomBar.Tab tab1) {
                 switch (i){
                     case 0:
-                       //Lock Page
+                        //Lock Page
                         fragment= new LockFragment();
                         break;
                     case 1:
@@ -58,4 +63,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Fetching the stored data
+        // from the SharedPreference
+        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        int a = sh.getInt("test", 0);
+        // Setting the fetched data
+        // in the EditTexts
+    }
+
+
+
 }

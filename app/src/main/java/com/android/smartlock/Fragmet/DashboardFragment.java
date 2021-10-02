@@ -1,11 +1,16 @@
 package com.android.smartlock.Fragmet;
 
+import android.app.AppOpsManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +64,11 @@ public class DashboardFragment extends Fragment {
         return fragment;
     }
 
+    private boolean checkForPermission(Context context) {
+        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats", android.os.Process.myUid(), context.getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +76,9 @@ public class DashboardFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        while (!checkForPermission(getContext()))
+            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
 
     @Override
@@ -79,7 +92,7 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         BarChart chart = (BarChart)getView().findViewById(R.id.barchart);
-        ArrayList<Double> valueList = new ArrayList<Double>();
+        ArrayList<Double> valueList = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
         String title = "Title";
 
@@ -97,6 +110,10 @@ public class DashboardFragment extends Fragment {
         BarDataSet barDataSet = new BarDataSet(entries, title);
 
         BarData data = new BarData(barDataSet);
+        chart.getAxisLeft().setTextColor(Color.BLACK); // left y-axis
+        chart.getXAxis().setTextColor(Color.BLACK);
+        chart.getLegend().setTextColor(Color.BLACK);
+        chart.getDescription().setTextColor(Color.BLACK);
         chart.setData(data);
         chart.invalidate();
 
