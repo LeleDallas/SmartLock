@@ -77,7 +77,7 @@ public class DashboardFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        while (!checkForPermission(getContext()))
+        if (!checkForPermission(getContext()))
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
 
