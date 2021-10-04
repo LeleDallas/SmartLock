@@ -24,45 +24,16 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DashboardFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import app.futured.donut.DonutProgressView;
+import app.futured.donut.DonutSection;
+
+
 public class DashboardFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public DashboardFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Dashboard.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DashboardFragment newInstance(String param1, String param2) {
-        DashboardFragment fragment = new DashboardFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     private boolean checkForPermission(Context context) {
         AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -72,11 +43,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         if (!checkForPermission(getContext()))
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
@@ -91,31 +57,21 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        BarChart chart = (BarChart)getView().findViewById(R.id.barchart);
-        ArrayList<Double> valueList = new ArrayList<>();
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        String title = "Title";
 
-        //input data
-        for(int i = 0; i < 6; i++){
-            valueList.add(i * 100.1);
-        }
+        DonutProgressView dpvChart = getView().findViewById(R.id.donut_view);
 
-        //fit the data into a bar
-        for (int i = 0; i < valueList.size(); i++) {
-            BarEntry barEntry = new BarEntry(i, valueList.get(i).floatValue());
-            entries.add(barEntry);
-        }
+        DonutSection section = new DonutSection("Section 1 Name", Color.parseColor("#a6a184"), 20.0f);
+        DonutSection section1 = new DonutSection("Section 2 Name", Color.parseColor("#bdbdc7"), 10.0f);
+        DonutSection section2 = new DonutSection("Section 3 Name", Color.parseColor("#000036"), 10.0f);
+        DonutSection section3 = new DonutSection("Section 4 Name", Color.parseColor("#ff1136"), 10.0f);
+        dpvChart.setCap(100f);
+        ArrayList<DonutSection> list = new ArrayList<>(Collections.singleton(section));
+        list.add(section1);
+        list.add(section2);
+        list.add(section3);
 
-        BarDataSet barDataSet = new BarDataSet(entries, title);
+        dpvChart.submitData(list);
 
-        BarData data = new BarData(barDataSet);
-        chart.getAxisLeft().setTextColor(Color.BLACK); // left y-axis
-        chart.getXAxis().setTextColor(Color.BLACK);
-        chart.getLegend().setTextColor(Color.BLACK);
-        chart.getDescription().setTextColor(Color.BLACK);
-        chart.setData(data);
-        chart.invalidate();
 
     }
 }

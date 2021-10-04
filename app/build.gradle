@@ -42,5 +42,9 @@ dependencies {
     implementation"app.futured.donut:donut:2.1.0"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.badoualy:datepicker-timeline:c6dcd05737'
+    implementation 'com.orhanobut:dialogplus:1.11@aar'
+
+
+
 
 }

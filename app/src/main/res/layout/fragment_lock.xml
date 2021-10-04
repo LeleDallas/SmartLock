@@ -23,11 +23,15 @@
         app:mti_ringLblDateSelectedColor="@color/rosyBrown"
         />
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apps Usage Time"
-        android:layout_marginVertical="20dp"
+        android:layout_width="200dp"
+        android:layout_height="30dp"
+        android:text="@string/apps_usage_time"
+        android:layout_margin="20dp"
         android:layout_gravity="center"
+        android:gravity="center"
+        android:fontFamily="@font/quicksand"
+        android:textSize="18sp"
+        android:elevation="8dp"
         android:background="@drawable/bordercard"
 
 />

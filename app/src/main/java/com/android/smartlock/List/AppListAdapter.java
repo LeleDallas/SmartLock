@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.smartlock.MainActivity;
 import com.android.smartlock.R;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.GridHolder;
+import com.orhanobut.dialogplus.ListHolder;
+import com.orhanobut.dialogplus.OnBackPressListener;
+import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.util.List;
 
@@ -83,6 +88,20 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
             myEdit.putInt("test", a);
             myEdit.commit();
             Toast.makeText(view.getContext(),"a:"+a, Toast.LENGTH_LONG).show();
+
+            DialogPlus dialog = DialogPlus.newDialog(mInflater.getContext())
+                    .setOnItemClickListener((dialog1, item, view1, position) -> {
+                        Toast.makeText(view.getContext(), ""+item, Toast.LENGTH_LONG).show();
+                    })
+                    .setContentHolder(new GridHolder(1))
+                    .setCancelable(true)
+                    .setExpanded(true)
+                    .setHeader(R.layout.header)
+                    .setFooter(R.layout.footer)
+                    .setContentWidth(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .create();
+            dialog.show();
         }
     }
 

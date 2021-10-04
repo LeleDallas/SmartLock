@@ -64,12 +64,6 @@ public class LockFragment extends Fragment {
 
         return hour+min+sec;
     }
-    private boolean checkForPermission(Context context) {
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow("android:get_usage_stats", android.os.Process.myUid(), context.getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED;
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -168,4 +162,8 @@ public class LockFragment extends Fragment {
         adapter = new AppListAdapter(getContext(), apps, imgs,times);
         recyclerView.setAdapter(adapter);
     }
+
+
+
 }
+
