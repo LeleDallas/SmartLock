@@ -36,6 +36,7 @@
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -51,32 +52,63 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-                    <ImageView
-                        android:id="@+id/imageView"
+                    <ImageButton
+                        android:id="@+id/addConfig"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/ic_activity"
+                        android:scaleType="centerCrop"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         app:tint="@color/rosyBrown" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <app.futured.donut.DonutProgressView
-                    android:layout_margin="22dp"
-                    android:id="@+id/donut_view"
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    app:donut_bgLineColor="@color/boldGray"
-                    app:donut_gapAngle="270"
-                    app:donut_gapWidth="0"
-                    app:donut_strokeWidth="8dp"
-                    />
-            </LinearLayout>
+                    android:layout_height="wrap_content">
 
+
+                    <com.razerdp.widget.animatedpieview.AnimatedPieView
+                        android:id="@+id/animatedPieView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/animatedPieView">
+
+                        <TextView
+                            android:id="@+id/text_usage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/text_usage_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -87,6 +119,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
+                android:layout_margin="5dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
