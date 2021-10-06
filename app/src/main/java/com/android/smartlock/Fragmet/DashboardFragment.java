@@ -10,6 +10,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,67 +76,113 @@ public class DashboardFragment extends Fragment {
         }
     }
 
+    ImageButton addConfig;
+    Button btnAdd;
+    AnimatedPieView mAnimatedPieView;
+    TextView usage ,usageTime;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ImageButton addConfig= getView().findViewById(R.id.addConfig);
+        addConfig= getView().findViewById(R.id.addConfig);
+        btnAdd= getView().findViewById(R.id.button_add);
+        mAnimatedPieView = getView().findViewById(R.id.animatedPieView);
+        usage= getView().findViewById(R.id.text_usage);
+        usageTime= getView().findViewById(R.id.text_usage_desc);
+
         final PackageManager pm = getActivity().getPackageManager();
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         Global g= new Global();
         g.getData(pm,packages, getActivity(), getContext());
-        addConfig.setOnClickListener(v -> {
-            ForwardAdapter adapter= new ForwardAdapter(getContext(), g.getApps(), g.getPackageName(),g.getImgs());
-            DialogPlus dialog = DialogPlus.newDialog(requireContext())
-                    .setContentHeight( getActivity().getWindowManager().getDefaultDisplay().getHeight())
-                    .setAdapter(adapter)
-                    .setHeader(R.layout.header).setOnClickListener((dialog1, view1) -> {
-                        ImageButton closeX= view1.findViewById(R.id.close_xI);
-                        if(closeX!=null)
-                            closeX.setOnClickListener(l ->  dialog1.dismiss());
-                    })
-                    .setFooter(R.layout.footer).setOnClickListener((dialog1, view1) -> {
-                        Button closeX= view1.findViewById(R.id.close_x);
-                        if(closeX!=null)
-                            closeX.setOnClickListener(v1 ->  dialog1.dismiss());
-                    })
-                    .setPadding(120,20,120,20)
-                    .setContentHolder(new ListHolder())
-                    .setOnItemClickListener((dialog1, item, view1, position) -> {
-                    })
-                    .setCancelable(true)
-                    .setExpanded(true)
-                    .setOnCancelListener(dialog1 -> {
-                        refresh(g);
-                    })
-                    .create();
-            dialog.show();
-        });
+        btnAdd.setOnClickListener(v -> click(g));
+        addConfig.setOnClickListener(v -> click(g));
+        if(isEmpty()) {
+            mAnimatedPieView.setVisibility(View.INVISIBLE);
+            btnAdd.setVisibility(View.VISIBLE);
+        }
+        else {
+            mAnimatedPieView.setVisibility(View.VISIBLE);
+            btnAdd.setVisibility(View.INVISIBLE);
+            refresh(g);
+        }
+    }
 
+    private void click(Global g) {
+        ForwardAdapter adapter= new ForwardAdapter(getContext(), g.getApps(), g.getPackageName(),g.getImgs());
+        DialogPlus dialog = DialogPlus.newDialog(requireContext())
+                .setContentHeight( getActivity().getWindowManager().getDefaultDisplay().getHeight())
+                .setAdapter(adapter)
+                .setHeader(R.layout.header).setOnClickListener((dialog1, view1) -> {
+                    ImageButton closeX= view1.findViewById(R.id.close_xI);
+                    if(closeX!=null)
+                        closeX.setOnClickListener(l ->  dialog1.dismiss());
+                })
+                .setFooter(R.layout.footer).setOnClickListener((dialog1, view1) -> {
+                    Button closeX= view1.findViewById(R.id.close_x);
+                    if(closeX!=null)
+                        closeX.setOnClickListener(v1 ->  dialog1.dismiss());
+                })
+                .setPadding(120,20,120,20)
+                .setContentHolder(new ListHolder())
+                .setOnItemClickListener((dialog1, item, view1, position) -> {
+                })
+                .setCancelable(true)
+                .setExpanded(true)
+                .setOnCancelListener(dialog1 -> {
+                    if(isEmpty()) {
+                        mAnimatedPieView.setVisibility(View.INVISIBLE);
+                        btnAdd.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        mAnimatedPieView.setVisibility(View.VISIBLE);
+                        btnAdd.setVisibility(View.INVISIBLE);
+                        refresh(g);
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+
+    private boolean isEmpty() {
+        SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Set<String> hs = sh.getStringSet("config", new HashSet<String>());
+        Log.i("TAG", hs.size()+"");
+        return hs.size()==0;
     }
 
 
     public void  refresh(Global g) {
-        AnimatedPieView mAnimatedPieView = getView().findViewById(R.id.animatedPieView);
-        TextView usage= getView().findViewById(R.id.text_usage);
-        TextView usageTime= getView().findViewById(R.id.text_usage_desc);
         AnimatedPieViewConfig config = new AnimatedPieViewConfig();
         //fetch data and insert
         SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Set<String> hs = sh.getStringSet("config", new HashSet<String>());
         for (String val:hs) {
-            config.addData(new myInfo(2f, g.getDominantColor(g.resourceToBitmap(val, getActivity()) ), g.getNameFromPackage(val), val)
+            String name="";
+            if (g.getPackageName().contains(val))
+                name=  g.getApps().get(g.getPackageName().indexOf(val));
+
+            Long totalTimeUsageInMillis= 0L;
+            UsageStatsManager mUsageStatsManager = (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            long start = calendar.getTimeInMillis();
+            long end = System.currentTimeMillis();
+            Map<String, UsageStats> lUsageStatsMap = mUsageStatsManager.queryAndAggregateUsageStats(start,end );
+            if (lUsageStatsMap.get(val)!=null)
+                totalTimeUsageInMillis = lUsageStatsMap.get(val).getTotalTimeInForeground();
+            if(totalTimeUsageInMillis==0)
+                continue;
+            config.addData(new myInfo(totalTimeUsageInMillis, g.getDominantColor(g.resourceToBitmap(val, getActivity()) ), name, val)
                     .setLabel(g.resourceToBitmap(val, getActivity()))
-                    .setIconHeight(150));
+                    .setIconHeight(80));
         }
-
-
-
         config.startAngle(-90)// Starting angle offset
-                .floatShadowRadius(8f)// Selected pie's shadow of expansion
+                .pieRadius(260)// Set chart radius
+                .floatShadowRadius(98f)// Selected pie's shadow of expansion
                 .strokeWidth(10)// Stroke width for ring-chart
-                .guideLineWidth(5)
-                .guideLineMarginStart(2)
-                .setTextLineStartMargin(10)
+                .floatExpandSize(18f)
+                .textGravity(AnimatedPieViewConfig.ECTOPIC)
+                .splitAngle(1)
                 .canTouch(true)
                 .drawText(true)// Whether to draw a text description
                 .selectListener((OnPieSelectListener<myInfo>) (pieInfo, isFloatUp) -> {
@@ -150,9 +197,8 @@ public class DashboardFragment extends Fragment {
                         long start = calendar.getTimeInMillis();
                         long end = System.currentTimeMillis();
                         Map<String, UsageStats> lUsageStatsMap = mUsageStatsManager.queryAndAggregateUsageStats(start,end );
-                        totalTimeUsageInMillis = lUsageStatsMap.get(pieInfo.getPackage()).getTotalTimeInForeground();
-                        if(totalTimeUsageInMillis==null)
-                            totalTimeUsageInMillis=0L;
+                        if (lUsageStatsMap.get(pieInfo.getPackage())!=null)
+                            totalTimeUsageInMillis = lUsageStatsMap.get(pieInfo.getPackage()).getTotalTimeInForeground();
                         usage.setText(pieInfo.getDesc());
                         usageTime.setText(g.converLongToTimeChar(totalTimeUsageInMillis));
                     }

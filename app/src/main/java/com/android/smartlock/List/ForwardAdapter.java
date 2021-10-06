@@ -3,6 +3,7 @@ package com.android.smartlock.List;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,19 +55,34 @@ public class ForwardAdapter extends ArrayAdapter {
         } else {
             view = convertView;
         }
+        SharedPreferences sh = view.getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Set<String> hs = sh.getStringSet("config", new HashSet<>());
+
         // Lookup view for data population
         Button btn = view.findViewById(R.id.button);
+
+        if(hs.contains(appPackage.get(position)))
+            btn.setText("Remove");
+        else
+            btn.setText("Add");
+
         btn.setOnClickListener(v -> {
-            SharedPreferences sh = view.getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
-            Set<String> hs = sh.getStringSet("config", new HashSet<String>());
+            //Riguarda sta roba
+            Log.i("TAG",appPackage.get(position));
+            hs.clear();
+            hs.addAll(sh.getStringSet("config", null));
+            SharedPreferences.Editor editor = sh.edit();
+            Set<String> in = new HashSet<>(hs);
             if(hs.contains(appPackage.get(position))) {
-                hs.remove(appPackage.get(position));
-            }
-            else{
-                Set<String> in = new HashSet<String>(hs);
+                in.remove(appPackage.get(position));
+                btn.setText("Add");
+            }else{
                 in.add(appPackage.get(position));
-                sh.edit().putStringSet("config", in).apply();
+                btn.setText("Remove");
             }
+            editor.putStringSet("config", in);
+            editor.apply();
+            Log.i("TAG", sh.getAll().toString());
         });
         ImageView img= view.findViewById(R.id.icon_list);
         img.setImageDrawable(appIcon.get(position));

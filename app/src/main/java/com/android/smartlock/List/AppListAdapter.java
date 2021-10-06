@@ -3,22 +3,31 @@ package com.android.smartlock.List;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.smartlock.Global.Global;
 import com.android.smartlock.MainActivity;
 import com.android.smartlock.R;
+import com.mcsoft.timerangepickerdialog.RangeTimePickerDialog;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.GridHolder;
 import com.orhanobut.dialogplus.ListHolder;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.List;
 
@@ -82,26 +91,16 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
 
         @Override
         public void onClick(View view) {
+            Global g= new Global();
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-            int a = sh.getInt("test", 0)+1;
-            SharedPreferences.Editor myEdit = sh.edit();
-            myEdit.putInt("test", a);
-            myEdit.commit();
-            Toast.makeText(view.getContext(),"a:"+a, Toast.LENGTH_LONG).show();
-
-            DialogPlus dialog = DialogPlus.newDialog(mInflater.getContext())
-                    .setOnItemClickListener((dialog1, item, view1, position) -> {
-                        Toast.makeText(view.getContext(), ""+item, Toast.LENGTH_LONG).show();
-                    })
-                    .setContentHolder(new GridHolder(1))
-                    .setCancelable(true)
-                    .setExpanded(true)
-                    .setHeader(R.layout.header)
-                    .setFooter(R.layout.footer)
-                    .setContentWidth(ViewGroup.LayoutParams.WRAP_CONTENT)
-                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                    .create();
-            dialog.show();
+            RangeTimePickerDialog dialog = new RangeTimePickerDialog();
+            dialog.newInstance();
+            dialog.setRadiusDialog(20); // Set radius of dialog (default is 50)
+            dialog.setIs24HourView(true); // Indicates if the format should be 24 hours
+            dialog.setColorBackgroundHeader(R.color.colorPrimary); // Set Color of Background header dialog
+            dialog.setColorTextButton(R.color.colorPrimaryDark); // Set Text color of button
+            FragmentManager fragmentManager = ((AppCompatActivity)view.getContext()).getSupportFragmentManager();
+            dialog.show(fragmentManager , "aaa");
         }
     }
 

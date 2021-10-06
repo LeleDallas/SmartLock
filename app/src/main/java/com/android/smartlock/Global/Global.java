@@ -110,9 +110,6 @@ public class Global {
         return vibrant;
     }
 
-
-
-
     public void getData(PackageManager pm, List<ApplicationInfo> packages, Activity activity, Context context){
         apps = new ArrayList<>();
         imgs= new ArrayList<>();
@@ -135,7 +132,7 @@ public class Global {
                 apps.add((String) pm.getApplicationLabel(packageInfo));
                 try {
                     imgs.add(activity.getApplicationContext().getPackageManager().getApplicationIcon(packageInfo.packageName));
-                    Log.i("TAG", packageInfo.packageName);
+                    //Log.i("TAG", packageInfo.packageName);
                 }catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
