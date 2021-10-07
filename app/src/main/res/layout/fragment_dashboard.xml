@@ -86,6 +86,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/antic_regular"
                         android:text="Add Configuration"
+                        android:backgroundTint="@color/white"
                         android:textAllCaps="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

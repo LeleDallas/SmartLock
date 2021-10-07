@@ -1,57 +1,31 @@
 package com.android.smartlock.Fragmet;
 
-import android.annotation.SuppressLint;
-import android.app.AppOpsManager;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.provider.Settings;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.smartlock.Global.Global;
 import com.android.smartlock.List.AppListAdapter;
 import com.android.smartlock.R;
 import com.github.badoualy.datepicker.DatePickerTimeline;
-import com.razerdp.widget.animatedpieview.AnimatedPieView;
-import com.razerdp.widget.animatedpieview.AnimatedPieViewConfig;
-import com.razerdp.widget.animatedpieview.data.SimplePieInfo;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-public class LockFragment extends Fragment {
+public class LockFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_lock, container, false);
@@ -60,6 +34,7 @@ public class LockFragment extends Fragment {
     RecyclerView recyclerView;
     AppListAdapter adapter;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         final PackageManager pm = getActivity().getPackageManager();
@@ -85,6 +60,5 @@ public class LockFragment extends Fragment {
             recyclerView.setAdapter(adapter);
         });
     }
-
 }
 

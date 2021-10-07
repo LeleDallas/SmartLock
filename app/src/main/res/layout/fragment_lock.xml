@@ -34,7 +34,8 @@
         android:elevation="8dp"
         android:background="@drawable/bordercard"
 
-/>
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_app"
         android:layout_width="match_parent"

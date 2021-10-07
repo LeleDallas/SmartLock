@@ -7,7 +7,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
         android:textSize="10dp"
+        android:backgroundTint="@color/white"
         android:text="Close Selection"
         android:id="@+id/close_x"
         android:layout_marginVertical="20dp"
