@@ -29,6 +29,7 @@ public class Global {
     ArrayList<Drawable> imgs;
     ArrayList<String> times, packageName,apps;
     PackageManager pm;
+    Activity activity;
     public ArrayList<String> getApps() {
         return apps;
     }
@@ -44,6 +45,11 @@ public class Global {
     public ArrayList<String> getPackageName() {
         return packageName;
     }
+
+    public void setActivity(Activity activity){
+        this.activity=activity;
+    }
+    public Activity getActivity(){return  this.activity;}
 
     public Global(){
         apps = new ArrayList<>();

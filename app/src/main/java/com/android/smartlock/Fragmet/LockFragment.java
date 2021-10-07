@@ -43,8 +43,9 @@ public class LockFragment extends Fragment{
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         Global g= new Global();
+        g.setActivity(getActivity());
         g.getData(pm,packages, getActivity(),getContext());
-        adapter = new AppListAdapter(getContext(), g.getApps(), g.getImgs(),g.getTimes());
+        adapter = new AppListAdapter(getContext(), g.getApps(), g.getImgs(),g.getTimes(),g.getPackageName(),g);
         recyclerView.setAdapter(adapter);
         DatePickerTimeline timeline=getView().findViewById(R.id.timeline);
         Calendar currentDate = Calendar.getInstance();
@@ -56,7 +57,7 @@ public class LockFragment extends Fragment{
         timeline.setLastVisibleDate(years, months, days);
         timeline.setOnDateSelectedListener((year, month, day, index) -> {
             g.getData(pm, packages,year,month,day,getActivity(), getContext());
-            adapter = new AppListAdapter(getContext(),g.getApps(), g.getImgs(),g.getTimes());
+            adapter = new AppListAdapter(getContext(),g.getApps(), g.getImgs(),g.getTimes(),g.getPackageName(),g);
             recyclerView.setAdapter(adapter);
         });
     }

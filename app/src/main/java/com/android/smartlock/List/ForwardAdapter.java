@@ -57,23 +57,17 @@ public class ForwardAdapter extends ArrayAdapter {
         }
         SharedPreferences sh = view.getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Set<String> hs = sh.getStringSet("config", new HashSet<>());
-
         // Lookup view for data population
         Button btn = view.findViewById(R.id.button);
-
         if(hs.contains(appPackage.get(position)))
             btn.setText("Remove");
         else
             btn.setText("Add");
 
         btn.setOnClickListener(v -> {
-            //Riguarda sta roba
-            Log.i("TAG",appPackage.get(position));
-            hs.clear();
-            hs.addAll(sh.getStringSet("config", null));
             SharedPreferences.Editor editor = sh.edit();
-            Set<String> in = new HashSet<>(hs);
-            if(hs.contains(appPackage.get(position))) {
+            Set<String> in = new HashSet<>(sh.getStringSet("config", new HashSet<>()));
+            if(btn.getText()=="Remove") {
                 in.remove(appPackage.get(position));
                 btn.setText("Add");
             }else{
@@ -82,7 +76,6 @@ public class ForwardAdapter extends ArrayAdapter {
             }
             editor.putStringSet("config", in);
             editor.apply();
-            Log.i("TAG", sh.getAll().toString());
         });
         ImageView img= view.findViewById(R.id.icon_list);
         img.setImageDrawable(appIcon.get(position));

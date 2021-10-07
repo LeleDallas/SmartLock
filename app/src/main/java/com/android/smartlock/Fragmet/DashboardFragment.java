@@ -111,11 +111,7 @@ public class DashboardFragment extends Fragment {
         DialogPlus dialog = DialogPlus.newDialog(requireContext())
                 .setContentHeight( getActivity().getWindowManager().getDefaultDisplay().getHeight())
                 .setAdapter(adapter)
-                .setHeader(R.layout.header).setOnClickListener((dialog1, view1) -> {
-                    ImageButton closeX= view1.findViewById(R.id.close_xI);
-                    if(closeX!=null)
-                        closeX.setOnClickListener(l ->  dialog1.dismiss());
-                })
+                .setHeader(R.layout.header)
                 .setFooter(R.layout.footer).setOnClickListener((dialog1, view1) -> {
                     Button closeX= view1.findViewById(R.id.close_x);
                     if(closeX!=null)

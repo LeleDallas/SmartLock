@@ -1,64 +1,54 @@
 package com.android.smartlock.List;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.smartlock.Global.Global;
-import com.android.smartlock.MainActivity;
 import com.android.smartlock.R;
 import com.ashiqurrahman.rangedtimepickerdialog.library.TimeRangePickerDialog;
-import com.mcsoft.timerangepickerdialog.RangeTimePickerDialog;
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.GridHolder;
-import com.orhanobut.dialogplus.ListHolder;
-import com.orhanobut.dialogplus.OnBackPressListener;
-import com.orhanobut.dialogplus.OnClickListener;
-import com.orhanobut.dialogplus.OnItemClickListener;
-import com.orhanobut.dialogplus.ViewHolder;
+import com.google.gson.Gson;
 
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHolder> {
 
-    private List<String> mData;
+    private List<String> mData, pk;
     private List<Drawable> imgs;
     private List<String> times;
     private LayoutInflater mInflater;
     private SharedPreferences sh;
-    private String name;
+    Global global;
 
     // data is passed into the constructor
-    public AppListAdapter(Context context, List<String> data, List<Drawable>imgs, List<String> times) {
+    public AppListAdapter(Context context, List<String> data, List<Drawable>imgs, List<String> times,  List<String> pk,  Global global) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.imgs = imgs;;
         this.times = times;
+        this.global=global;
+        this.pk=pk;
     }
 
     // inflates the row layout
@@ -76,7 +66,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
         holder.myTextView.setText(mData.get(position));
         holder.icon.setImageDrawable(imgs.get(position));
         holder.time.setText(times.get(position));
-        name=mData.get(position);
+        holder.pk= pk.get(position);
     }
 
     // total number of rows
@@ -86,53 +76,71 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.ViewHold
     }
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView myTextView;
         TextView time;
         ImageView icon;
         Switch active;
+        String pk;
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.App_name);
             time=itemView.findViewById(R.id.App_time);
             icon= itemView.findViewById(R.id.AppIcon);
             active= itemView.findViewById(R.id.switch1);
-            // itemView.setOnClickListener(this);
             active.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked){
                     TimeRangePickerDialog dialog = new TimeRangePickerDialog(
                             (i, i1, i2, i3) -> {
-                                Log.i("EVENT", "start"+i+i1+"end"+i2+i3);
-                                new AlertDialog.Builder(itemView.getContext())
+                                MaterialDialog mDialog = new MaterialDialog.Builder(global.getActivity())
                                         .setTitle("Apply Configuration")
-                                        .setMessage("Are you sure to set a daily USAGE TIME of "+i+"h "+i1+ "m and a LOCK TIME for " +i2+"h"+i3+ "m for "+name+"?")
-                                                .setNegativeButton(android.R.string.cancel,(dialog1, which) -> {active.setChecked(false); })
-                                                .setPositiveButton(android.R.string.ok, (dialog1, which) -> {
-                                                    //add data to shared pref
-
-                                                })
-                                                .create()
-                                                .show();
+                                        .setMessage("Are you sure to set a \nDaily Usage Time of "+i+"h "+i1+ "m \nand a LOCK TIME for " +i2+"h"+i3+ "m \nfor "+myTextView.getText()+"?")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", R.drawable.ic_block, (dialogInterface, which) -> {
+                                            //ADD DATA
+                                            Time t1 = Time.valueOf(i+":"+i1+":00");
+                                            Time t2 = Time.valueOf(i2+":"+i3+":00");
+                                            Long l1 = t1.getTime();
+                                            Long l2 = t2.getTime();
+                                            List<String> list = new ArrayList<>();
+                                            list.add(pk);
+                                            list.add(l1+"");
+                                            list.add(l2+"");
+                                            Gson gson= new Gson();
+                                            String json= gson.toJson(list);
+                                            SharedPreferences sh = global.getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = sh.edit();
+                                            editor.putString("configLock", json);
+                                            editor.apply();
+                                            String a = sh.getString("configLock", "");
+                                            Log.i("CONGI", a);
+                                            dialogInterface.dismiss();
+                                        })
+                                        .setNegativeButton("Cancel", R.drawable.ic_close, (dialogInterface, which) -> {
+                                            active.setChecked(false);
+                                            dialogInterface.dismiss();
+                                        })
+                                        .build();
+                                mDialog.show();
                             },
                             "Set Max Usage Time",
                             "Set Lock Time",
                             true
                     );
                     dialog.setCancelable(false);
-                    dialog.show(((FragmentActivity)itemView.getContext()).getSupportFragmentManager(), "my-dialog-tag-string");
+                    dialog.isCancelable();
+                    dialog.show(((FragmentActivity)itemView.getContext()).getSupportFragmentManager(), "datePicker");
                 }
                 else {
-
+                    //REMOVE FROM CONFIG
+                    SharedPreferences sh = global.getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sh.edit();
+                    editor.remove(pk);
+                    editor.apply();
+                    String a = sh.getString("configLock", "");
+                    Log.i("CONGI", a);
                 }
             });
         }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public void onClick(View view) {
-            Global g= new Global();
-
-        }
     }
-
 }
