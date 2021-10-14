@@ -186,6 +186,11 @@ public class Global {
         }
     }
 
+    public static int lcm(int... input) {
+        int result = input[0];
+        for(int i = 1; i < input.length; i++) result = lcm(result, input[i]);
+        return result;
+    }
 
     public String getNameFromPackage(String val) {
         ApplicationInfo app = null;
@@ -195,4 +200,6 @@ public class Global {
             e.printStackTrace();
         }
         return  "com.com.cpm";    }
+
+
 }

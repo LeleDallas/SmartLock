@@ -16,15 +16,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.smartlock.Global.Global;
 import com.android.smartlock.List.ForwardAdapter;
+import com.android.smartlock.List.IconAdapter;
 import com.android.smartlock.R;
+import com.google.gson.Gson;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ListHolder;
 import com.razerdp.widget.animatedpieview.AnimatedPieView;
@@ -32,11 +39,16 @@ import com.razerdp.widget.animatedpieview.AnimatedPieViewConfig;
 import com.razerdp.widget.animatedpieview.callback.OnPieSelectListener;
 import com.razerdp.widget.animatedpieview.data.SimplePieInfo;
 
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -80,6 +92,21 @@ public class DashboardFragment extends Fragment {
     Button btnAdd;
     AnimatedPieView mAnimatedPieView;
     TextView usage ,usageTime;
+    RecyclerView iconList;
+    Switch quick_switch;
+
+    public void setIconDrawableList(){
+        SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Set<String> hs = sh.getStringSet("config", new HashSet<String>());
+        Log.e("ad", hs.toString());
+        List<String> pk= new ArrayList<>();
+        for (String i :hs) pk.add(i);
+        IconAdapter a= new IconAdapter(getContext(),pk);
+        iconList.setAdapter(a);
+        iconList.setLayoutManager(new GridLayoutManager(getContext(), 5));
+    }
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -88,7 +115,37 @@ public class DashboardFragment extends Fragment {
         mAnimatedPieView = getView().findViewById(R.id.animatedPieView);
         usage= getView().findViewById(R.id.text_usage);
         usageTime= getView().findViewById(R.id.text_usage_desc);
-
+        iconList= getView().findViewById(R.id.listIcon);
+        quick_switch= getView().findViewById(R.id.quick_switch);
+        setIconDrawableList();
+        quick_switch.setOnClickListener( v -> {
+            if(quick_switch.isChecked()){
+                MaterialDialog mDialog = new MaterialDialog.Builder(getActivity())
+                        .setTitle("Apply Configuration")
+                        .setMessage("Are you sure to set a \nDaily Usage Time of 1h 0m \nand a LOCK TIME for 1h 30m \nfor selected apps?")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", R.drawable.ic_block, (dialogInterface, which) -> {
+                        /*ADD DATA
+                        List<String> list = new ArrayList<>();
+                        Gson gson= new Gson();
+                        String json= gson.toJson(list);
+                        SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sh.edit();
+                        editor.putString("configLock", json);
+                        editor.apply();
+                        String a = sh.getString("configLock", "");
+                        Log.i("CONGI", a);*/
+                            quick_switch.setChecked(true);
+                            dialogInterface.dismiss();
+                        })
+                        .setNegativeButton("Cancel", R.drawable.ic_close, (dialogInterface, which) -> {
+                            quick_switch.setChecked(false);
+                            dialogInterface.dismiss();
+                        })
+                        .build();
+                mDialog.show();
+            }
+        });
         final PackageManager pm = getActivity().getPackageManager();
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         Global g= new Global();
@@ -127,11 +184,13 @@ public class DashboardFragment extends Fragment {
                     if(isEmpty()) {
                         mAnimatedPieView.setVisibility(View.INVISIBLE);
                         btnAdd.setVisibility(View.VISIBLE);
+                        setIconDrawableList();
                     }
                     else {
                         mAnimatedPieView.setVisibility(View.VISIBLE);
                         btnAdd.setVisibility(View.INVISIBLE);
                         refresh(g);
+                        setIconDrawableList();
                     }
                 })
                 .create();
@@ -142,7 +201,7 @@ public class DashboardFragment extends Fragment {
     private boolean isEmpty() {
         SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Set<String> hs = sh.getStringSet("config", new HashSet<String>());
-        Log.i("TAG", hs.size()+"");
+        // Log.i("TAG", hs.size()+"");
         return hs.size()==0;
     }
 
