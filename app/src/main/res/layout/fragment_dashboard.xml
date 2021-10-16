@@ -80,18 +80,46 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/imgDash"
+                        android:layout_width="155dp"
+                        android:layout_height="156dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@drawable/lock_img"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/animatedPieView" />
+
+                    <TextView
+                        android:id="@+id/txtText"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/antic_regular"
+                        android:lines="3"
+                        android:maxLines="2"
+                        android:text="Add a quick configuration to see your daily usage data and set a quick app lock."
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="@+id/animatedPieView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/button_add"
+                        app:layout_constraintVertical_bias="0.19" />
+
                     <Button
                         android:id="@+id/button_add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/white"
                         android:fontFamily="@font/antic_regular"
                         android:text="Add Configuration"
-                        android:backgroundTint="@color/white"
                         android:textAllCaps="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/imgDash"
+                        app:layout_constraintVertical_bias="0.01999998" />
                     <LinearLayout
                         android:id="@+id/linearLayout"
                         android:layout_width="match_parent"

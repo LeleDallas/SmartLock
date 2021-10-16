@@ -47,9 +47,7 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:palette-v7:21.0.0'
     implementation 'com.github.ShabanKamell:ActionSheet:0.6.0'
-    implementation 'com.github.PuffoCyano:Range-Time-Picker-Dialog:v1.8'
     implementation 'com.github.ashiqursuperfly:Android-Material-Ranged-Time-Picker-Dialog:1.0.2'
     implementation 'dev.shreyaspatil.MaterialDialog:MaterialDialog:2.2.2'
-    implementation 'com.google.code.gson:gson:2.8.2'
-
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

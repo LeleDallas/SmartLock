@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.smartlock.Global.Global;
@@ -39,10 +38,12 @@ import com.razerdp.widget.animatedpieview.AnimatedPieViewConfig;
 import com.razerdp.widget.animatedpieview.callback.OnPieSelectListener;
 import com.razerdp.widget.animatedpieview.data.SimplePieInfo;
 
-import java.sql.Time;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import java.util.Set;
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.provider.DocumentsContract.createDocument;
 
 
 public class DashboardFragment extends Fragment {
@@ -89,9 +91,10 @@ public class DashboardFragment extends Fragment {
     }
 
     ImageButton addConfig;
+    ImageView img;
     Button btnAdd;
     AnimatedPieView mAnimatedPieView;
-    TextView usage ,usageTime;
+    TextView usage ,usageTime, textView;
     RecyclerView iconList;
     Switch quick_switch;
 
@@ -117,6 +120,8 @@ public class DashboardFragment extends Fragment {
         usageTime= getView().findViewById(R.id.text_usage_desc);
         iconList= getView().findViewById(R.id.listIcon);
         quick_switch= getView().findViewById(R.id.quick_switch);
+        img= getView().findViewById(R.id.imgDash);
+        textView= getView().findViewById(R.id.txtText);
         setIconDrawableList();
         quick_switch.setOnClickListener( v -> {
             if(quick_switch.isChecked()){
@@ -125,16 +130,24 @@ public class DashboardFragment extends Fragment {
                         .setMessage("Are you sure to set a \nDaily Usage Time of 1h 0m \nand a LOCK TIME for 1h 30m \nfor selected apps?")
                         .setCancelable(false)
                         .setPositiveButton("Ok", R.drawable.ic_block, (dialogInterface, which) -> {
-                        /*ADD DATA
-                        List<String> list = new ArrayList<>();
-                        Gson gson= new Gson();
-                        String json= gson.toJson(list);
-                        SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sh.edit();
-                        editor.putString("configLock", json);
-                        editor.apply();
-                        String a = sh.getString("configLock", "");
-                        Log.i("CONGI", a);*/
+                            // ADD DATA
+                            List<String> list = new ArrayList<>();
+                            SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                            Set<String> hs = sh.getStringSet("config", new HashSet<>());
+                            JSONObject all = new JSONObject();
+                            for (String appName : hs) {
+                                JSONObject document = new JSONObject();
+                                try {
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    document.put("Start", System.currentTimeMillis());
+                                    document.put("End",  System.currentTimeMillis()+(60*60*1000));
+                                    all.put(appName, document);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            Log.e("congi", all+"");
+
                             quick_switch.setChecked(true);
                             dialogInterface.dismiss();
                         })
@@ -155,10 +168,16 @@ public class DashboardFragment extends Fragment {
         if(isEmpty()) {
             mAnimatedPieView.setVisibility(View.INVISIBLE);
             btnAdd.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            img.setVisibility(View.VISIBLE);
+            usage.setText("");
+            usageTime.setText("");
         }
         else {
             mAnimatedPieView.setVisibility(View.VISIBLE);
             btnAdd.setVisibility(View.INVISIBLE);
+            img.setVisibility(View.INVISIBLE);
+            textView.setVisibility(View.INVISIBLE);
             refresh(g);
         }
     }
@@ -201,7 +220,6 @@ public class DashboardFragment extends Fragment {
     private boolean isEmpty() {
         SharedPreferences sh = getActivity().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Set<String> hs = sh.getStringSet("config", new HashSet<String>());
-        // Log.i("TAG", hs.size()+"");
         return hs.size()==0;
     }
 

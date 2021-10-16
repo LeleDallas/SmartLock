@@ -1,6 +1,7 @@
 package com.android.smartlock.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -11,9 +12,13 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.smartlock.MainActivity;
 import com.android.smartlock.R;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
 
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.ViewHolder> {
 
@@ -36,6 +41,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.ViewHolder> {
         try {
             Drawable icon =holder.itemView.getContext().getPackageManager().getApplicationIcon(imgs.get(position));
             holder.icon.setImageDrawable(icon);
+            holder.pk= imgs.get(position);
         }
         catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -49,9 +55,19 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
+        String pk;
         ViewHolder(View itemView) {
             super(itemView);
             icon= itemView.findViewById(R.id.imgIcon);
+            icon.setOnClickListener(v -> {
+                Timer buttonTimer = new Timer();
+                buttonTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Intent launchIntent = mInflater.getContext().getPackageManager().getLaunchIntentForPackage(pk);
+                        mInflater.getContext().startActivity(launchIntent);                    }
+                }, 10000);
+            });
         }
     }
 }
